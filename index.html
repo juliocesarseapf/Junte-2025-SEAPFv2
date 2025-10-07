@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Invocación - El Junte Definitivo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blood-red: #ff0000;
+            --toxic-green: #00ff7f;
+            --dark-abyss: #000000;
+            --ghostly-white: #f0f0f0;
+        }
+
+        /* --- KEYFRAME ANIMATIONS --- */
+        @keyframes spectral-glow { 0%, 100% { text-shadow: 0 0 10px var(--blood-red), 0 0 20px var(--blood-red), 0 0 40px #ff0000, 0 0 5px #fff; transform: scale(1); } 50% { text-shadow: 0 0 20px var(--toxic-green), 0 0 40px var(--toxic-green), 0 0 80px #00ff7f, 0 0 10px #fff; transform: scale(1.02); } }
+        @keyframes spooky-float { 0% { transform: translateY(10vh) rotate(-10deg); opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.8; } 100% { transform: translateY(-110vh) rotate(15deg); opacity: 0; } }
+        @keyframes lightning-flash { 0%, 100% { opacity: 0; } 50% { opacity: 0.6; } }
+        @keyframes blood-splatter { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+        @keyframes text-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes ghost-letter { from { opacity: 0; transform: translateY(20px) scale(1.2); filter: blur(5px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+        @keyframes button-glow-pulse { 0%, 100% { text-shadow: 0 0 10px var(--blood-red); } 50% { text-shadow: 0 0 20px var(--ghostly-white); } }
+
+        /* --- BASE STYLES --- */
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--dark-abyss); 
+            color: var(--ghostly-white); 
+            overflow-x: hidden; 
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"><g transform="rotate(180 128 128)"><path fill="%23ff0000" stroke="%23ffffff" stroke-width="8" d="M168 96a40 40 0 0 0-80 0c0 32.5 40 96 40 96s40-63.5 40-96Z"/></g></svg>') 16 31, auto;
+        }
+
+        /* --- BACKGROUND & OVERLAYS --- */
+        #video-bg { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -2; object-fit: cover; filter: grayscale(100%) brightness(0.4); }
+        .vhs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url(https://media.giphy.com/media/l41lI4bYmcsR3ua4M/giphy.gif); opacity: 0.1; z-index: -1; pointer-events: none; }
+        .tomb-texture { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url(https://www.transparenttextures.com/patterns/rocky-wall.png); opacity: 0.1; z-index: -1; pointer-events: none; }
+        
+        /* --- INTERACTIVE & DECORATIVE ELEMENTS --- */
+        .spooky-animation-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; overflow: hidden; }
+        .spooky-icon { position: absolute; bottom: -150px; animation: spooky-float linear infinite; }
+        .spooky-icon svg { width: 80px; height: auto; filter: drop-shadow(0 0 10px white); }
+        .blood-splatter-container { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 9998; pointer-events: none;}
+        .blood-splatter { position: absolute; width: 200px; height: 200px; background-image: url('https://static.vecteezy.com/system/resources/previews/013/941/913/original/red-blood-splatter-on-transparent-background-free-png.png'); background-size: contain; background-repeat: no-repeat; animation: blood-splatter 1s ease-out forwards; }
+        #lightning { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9997; opacity: 0; pointer-events: none; }
+
+        /* --- TYPOGRAPHY & UI --- */
+        .creepster { font-family: 'Creepster', cursive; color: var(--blood-red); animation: spectral-glow 4s infinite ease-in-out; letter-spacing: 0.2em; text-transform: uppercase; }
+        .cta-button { background-color: var(--blood-red); color: var(--dark-abyss); font-weight: 900; transition: all 0.3s; border: 2px solid var(--blood-red); }
+        .cta-button:hover { background-color: transparent; color: var(--blood-red); transform: scale(1.05); }
+        .ghost-reveal-text span { display: inline-block; opacity: 0; animation: ghost-letter 0.5s ease-out forwards; }
+
+        /* --- MODAL SEQUENCE --- */
+        #modal-sequence { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .modal-step { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+        .modal-step.active { display: flex; }
+        .modal-text { font-family: 'Creepster', cursive; font-size: clamp(2rem, 8vw, 5rem); color: var(--blood-red); text-shadow: 0 0 10px var(--blood-red); animation: text-flicker 3s infinite; }
+        .modal-button {
+            background: transparent;
+            border: 2px solid var(--blood-red);
+            color: var(--blood-red);
+            padding: 15px 35px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: inherit;
+            margin-top: 2rem;
+            transition: all 0.3s ease-in-out;
+            clip-path: polygon(10% 0, 100% 0, 95% 100%, 0 100%);
+            animation: button-glow-pulse 2s infinite ease-in-out;
+            position: relative;
+        }
+        .modal-button:before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 2px solid var(--dark-abyss);
+            clip-path: polygon(10% 0, 100% 0, 95% 100%, 0 100%);
+        }
+        .modal-button:hover { 
+            background: var(--blood-red); 
+            color: var(--dark-abyss); 
+            transform: scale(1.1);
+            text-shadow: none;
+            box-shadow: 0 0 25px var(--blood-red);
+        }
+
+        /* --- WHATSAPP & AUDIO BUTTONS --- */
+        .ui-button { position: fixed; z-index: 1001; background: rgba(255, 0, 0, 0.3); border: 2px solid var(--blood-red); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: inherit; backdrop-filter: blur(5px); transition: all 0.3s; opacity: 0; pointer-events: none; }
+        .ui-button.visible { opacity: 1; pointer-events: auto; }
+        .ui-button:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--blood-red); }
+        .ui-button svg { width: 24px; height: 24px; fill: var(--blood-red); }
+        #audio-toggle-btn { bottom: 20px; left: 20px; }
+        .whatsapp-float { bottom: 20px; right: 20px; background: #25D366; border-color: #25D366; }
+        .whatsapp-float:hover { background: #25D366; box-shadow: 0 0 20px #25D366; }
+        .whatsapp-float svg { fill: white; width: 30px; height: 30px; }
+    </style>
+</head>
+<body class="selection:bg-blood-red selection:text-white">
+    
+    <!-- Video Background & Overlays -->
+    <video autoplay muted loop id="video-bg">
+      <source src="https://videos.pexels.com/video-files/3130367/3130367-hd.mp4" type="video/mp4">
+    </video>
+    <div class="vhs-overlay"></div>
+    <div class="tomb-texture"></div>
+    <div id="lightning"></div>
+    <div class="blood-splatter-container" id="blood-container"></div>
+
+    <!-- Audio Player -->
+    <audio id="background-music" loop>
+        <source src="https://files.catbox.moe/m2odq2.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Modal Sequence -->
+    <div id="modal-sequence">
+        <div class="modal-step active" data-step="1">
+            <h2 class="modal-text">Ten cuidado... una fiesta legendaria te espera.</h2>
+            <button class="modal-button" data-next="2">Continuar...</button>
+        </div>
+        <div class="modal-step" data-step="2">
+            <h2 class="modal-text">Todo lo que pase aquí abajo... es tu responsabilidad.</h2>
+            <button class="modal-button" data-next="3">Acepto el riesgo...</button>
+        </div>
+        <div class="modal-step" data-step="3">
+            <h2 class="modal-text">Última oportunidad... ¿No tienes miedo?</h2>
+            <button class="modal-button" id="enter-site-btn">ENTRAR AL ABISMO</button>
+        </div>
+    </div>
+
+    <!-- Spooky Animations -->
+    <div class="spooky-animation-container" id="animation-container"></div>
+    
+    <!-- UI Buttons -->
+    <button id="audio-toggle-btn" class="ui-button" aria-label="Activar/desactivar música">
+        <svg id="sound-on-icon" style="display: none;" viewBox="0 0 24 24"><path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/></svg>
+        <svg id="sound-off-icon" viewBox="0 0 24 24"><path d="M12,4L7,9H3V15H7L12,20V4M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,12.28 18.98,12.55 18.94,12.82L19.71,13.59C20.42,12.83 20.94,11.91 21,10.91V10.9C21,7.72 18,4.14 14,3.23M16.5,12C16.5,11.39 16.41,10.81 16.25,10.26L14,7.97V16C15.06,15.54 15.82,14.65 16.2,13.59C16.4,13.08 16.5,12.55 16.5,12M1.39,4.22L3,5.83V9H4.76L8.95,13.18L10.05,14.28L12,16.23V20L13.18,18.82L19.78,25.41L21.19,24L1.39,4.22Z"/></svg>
+    </button>
+    <a href="https://wa.me/59178107853?text=Hola%20Julio%21%20Quiero%20comprar%20mi%20manilla%20para%20el%20Junte%20de%20Ex%20Promociones%202005%20SEAPF%20del%20Colegio%20Andres%20Ibañez.%20Espero%20tu%20respuesta.%20%F0%9F%91%BB" target="_blank" class="ui-button whatsapp-float" aria-label="Contactar por WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99 0-3.903-.52-5.586-1.459L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.886-.001 2.267.655 4.398 1.908 6.161l-1.334 4.869 4.869-1.332z"/></svg>
+    </a>
+    
+    <main class="relative z-10 opacity-0 transition-opacity duration-1000">
+        <!-- Header Section -->
+        <header class="text-center py-20 px-4 min-h-screen flex flex-col justify-center items-center">
+            <div class="max-w-5xl mx-auto relative">
+                <h2 class="text-3xl md:text-5xl text-white font-bold mb-4 ghost-reveal-text">UNA NOCHE DONDE LOS RECUERDOS SE VUELVEN INMORTALES</h2>
+                <h1 class="creepster text-7xl md:text-9xl lg:text-[12rem] leading-none mb-6 ghost-reveal-text">EL GRAN JUNTE</h1>
+                <p class="text-2xl md:text-4xl font-semibold text-gray-300 mb-12 ghost-reveal-text">La <span class="text-toxic-green font-black">Promo 2005 "SEAPF"</span> invoca a todas las ex promociones del <span class="text-white font-bold">Colegio Andrés Ibáñez</span> a un ritual de diversión y caos sin precedentes.</p>
+                <div id="countdown" class="flex justify-center items-center space-x-2 sm:space-x-4 mb-12"></div>
+                <a href="#manillas" class="cta-button inline-block px-10 py-4 text-xl sm:text-2xl rounded-lg uppercase">¡ASEGURA TU ALMA... Y TU ENTRADA!</a>
+            </div>
+        </header>
+
+        <section class="py-20 px-4 bg-black/50">
+            <div class="max-w-6xl mx-auto text-center">
+                <h3 class="creepster text-6xl md:text-8xl text-toxic-green mb-12 ghost-reveal-text">EL MANIFIESTO DE LA NOCHE</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                    <div class="border border-red-500 p-6 bg-black/70 rounded-lg"><h4 class="creepster text-4xl text-red-500 mb-2">DISFRACES DE PESADILLA</h4><p class="text-lg">La creatividad grotesca será recompensada. El mejor disfraz no solo gana un premio, gana la inmortalidad.</p></div>
+                    <div class="border border-red-500 p-6 bg-black/70 rounded-lg"><h4 class="creepster text-4xl text-red-500 mb-2">PÓCIMAS Y ELIXIRES</h4><p class="text-lg">Una barra con brebajes para resucitar a los caídos. Aceptamos QR y efectivo. Bebe con sabiduría, o no.</p></div>
+                    <div class="border border-red-500 p-6 bg-black/70 rounded-lg"><h4 class="creepster text-4xl text-red-500 mb-2">HIMNOS DEL PASADO</h4><p class="text-lg">Un DJ de ultratumba desatará los hits que marcaron nuestra era. Prohibido no bailar hasta el amanecer.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="manillas" class="py-20 px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                 <h3 class="creepster text-6xl md:text-8xl text-red-500 mb-4 ghost-reveal-text">EL PORTAL</h3>
+                <p class="text-2xl text-gray-300 mb-8 font-bold">El ritual se llevará a cabo en un lugar donde los gritos no se escuchan.</p>
+                <div class="border-4 border-toxic-green p-8 sm:p-10 rounded-xl mx-auto bg-black/80">
+                    <p class="text-2xl font-bold text-toxic-green">Fecha y Hora Fatal:</p>
+                    <p class="text-4xl text-white font-black mb-6">Sábado 11/10/2025 - 21:00 HRS</p>
+                    <p class="text-2xl font-bold text-toxic-green">Ubicación Secreta:</p>
+                    <p class="text-4xl text-white font-black mb-8">Salón de Eventos San José (Plan 3000)</p>
+                    <p class="text-2xl text-red-500 font-bold mb-6">No hay escapatoria. Consigue tu manilla.</p>
+                    <a href="https://wa.me/59178107853?text=Hola%20Julio%21%20Quiero%20comprar%20mi%20manilla%20para%20el%20Junte%20de%20Ex%20Promociones%202005%20SEAPF%20del%20Colegio%20Andres%20Ibañez.%20Espero%20tu%20respuesta.%20%F0%9F%91%BB" target="_blank" class="cta-button inline-block px-10 py-4 text-xl sm:text-2xl rounded-lg uppercase">Contactar al Guardián</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-8 px-4 text-center">
+            <p class="text-lg font-bold text-toxic-green">Invoca: Promo 2005 SEAPF</p>
+        </footer>
+    </main>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const audio = document.getElementById('background-music');
+        const modalSequence = document.getElementById('modal-sequence');
+        const mainContent = document.querySelector('main');
+        const audioToggleBtn = document.getElementById('audio-toggle-btn');
+        const soundOnIcon = document.getElementById('sound-on-icon');
+        const soundOffIcon = document.getElementById('sound-off-icon');
+        const whatsappBtn = document.querySelector('.whatsapp-float');
+        const lightning = document.getElementById('lightning');
+        const bloodContainer = document.getElementById('blood-container');
+        let currentStep = 1;
+
+        // Modal Logic
+        modalSequence.addEventListener('click', (e) => {
+            if (e.target.matches('.modal-button')) {
+                const nextStep = e.target.dataset.next;
+                if (nextStep) {
+                    document.querySelector(`.modal-step[data-step="${currentStep}"]`).classList.remove('active');
+                    currentStep = nextStep;
+                    document.querySelector(`.modal-step[data-step="${currentStep}"]`).classList.add('active');
+                }
+            }
+        });
+        
+        document.getElementById('enter-site-btn').addEventListener('click', () => {
+            audio.play().catch(error => console.error("Audio autoplay prevented. User must interact.", error));
+            soundOnIcon.style.display = 'block';
+            soundOffIcon.style.display = 'none';
+            modalSequence.style.opacity = '0';
+            setTimeout(() => modalSequence.style.display = 'none', 1000);
+            mainContent.style.opacity = '1';
+            audioToggleBtn.classList.add('visible');
+            whatsappBtn.classList.add('visible');
+            
+            // Animate text on enter
+            document.querySelectorAll('.ghost-reveal-text').forEach(textElement => {
+                const text = textElement.textContent;
+                textElement.innerHTML = '';
+                text.split('').forEach((char, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    span.style.animationDelay = `${index * 0.05}s`;
+                    textElement.appendChild(span);
+                });
+            });
+
+            // Start random horror effects
+            setInterval(triggerLightning, Math.random() * 15000 + 8000);
+            setInterval(triggerBloodSplatter, Math.random() * 20000 + 10000);
+        });
+
+        // Audio Toggle Logic
+        audioToggleBtn.addEventListener('click', () => {
+             if (audio.muted) {
+                audio.muted = false;
+                soundOnIcon.style.display = 'block';
+                soundOffIcon.style.display = 'none';
+            } else {
+                audio.muted = true;
+                soundOnIcon.style.display = 'none';
+                soundOffIcon.style.display = 'block';
+            }
+        });
+
+        // Horror Effects
+        function triggerLightning() {
+            lightning.style.animation = 'lightning-flash 0.5s ease-out';
+            setTimeout(() => {
+                lightning.style.animation = 'none';
+            }, 500);
+        }
+
+        function triggerBloodSplatter() {
+            const splatter = document.createElement('div');
+            splatter.className = 'blood-splatter';
+            splatter.style.top = `${Math.random() * 80}%`;
+            splatter.style.left = `${Math.random() * 80}%`;
+            splatter.style.transform = `rotate(${Math.random() * 360}deg)`;
+            bloodContainer.appendChild(splatter);
+            setTimeout(() => {
+                splatter.remove();
+            }, 1000);
+        }
+
+        // Spooky Animation
+        const animationContainer = document.getElementById('animation-container');
+        const spookyIcons = [
+            { svg: `<svg viewBox="0 0 100 100"><path d="M10 50 C 10 20, 90 20, 90 50 C 90 80, 80 80, 80 90 L 70 80 L 60 90 L 50 80 L 40 90 L 30 80 L 20 90 C 20 80, 10 80, 10 50 Z" fill="rgba(240,240,240,0.5)"></path><circle cx="35" cy="45" r="5" fill="black"></circle><circle cx="65" cy="45" r="5" fill="black"></circle></svg>`}
+        ];
+        const numberOfIcons = 7;
+        for (let i = 0; i < numberOfIcons; i++) {
+            const el = document.createElement('div');
+            el.className = `spooky-icon`;
+            el.innerHTML = spookyIcons[0].svg;
+            el.style.left = `${Math.random() * 100}vw`;
+            el.style.animationDuration = `${Math.random() * 15 + 10}s`;
+            el.style.animationDelay = `${Math.random() * 5}s`;
+            animationContainer.appendChild(el);
+        }
+
+        // Countdown Timer
+        const targetDate = new Date('October 11, 2025 21:00:00').getTime();
+        const countdownElement = document.getElementById('countdown');
+        function formatTime(v){return String(v).padStart(2,'0');}
+        function updateCountdown() {
+            const now=new Date().getTime();const dist=targetDate-now;
+            if(dist<0){countdownElement.innerHTML=`<div class="text-center text-4xl sm:text-6xl"><p class="creepster">EL PORTAL ESTÁ ABIERTO</p></div>`;clearInterval(countdownInterval);return;}
+            const d=Math.floor(dist/86400000);const h=Math.floor((dist%86400000)/3600000);const m=Math.floor((dist%3600000)/60000);const s=Math.floor((dist%60000)/1000);
+            const parts=[{v:d,l:'DÍAS'},{v:h,l:'HRS'},{v:m,l:'MIN'},{v:s,l:'SEG'}];
+            countdownElement.innerHTML=parts.map((p,i)=>`<div class="flex flex-col items-center justify-center p-2"><span class="creepster text-5xl md:text-7xl">${formatTime(p.v)}</span><span class="text-sm font-semibold">${p.l}</span></div>${i<3?'<span class="creepster text-5xl md:text-7xl">:</span>':''}`).join('');
+        }
+        const countdownInterval = setInterval(updateCountdown, 1000); updateCountdown();
+    });
+    </script>
+</body>
+</html>
+
